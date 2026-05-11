@@ -1,0 +1,118 @@
+<div class="container dashboard-page">
+  <div class="dashboard-header">
+    <h1>Tableau de bord</h1>
+    <p class="subtitle">Gérez l'inventaire de votre officine en temps réel.</p>
+  </div>
+
+  <div class="grid">
+    <!-- Left: Add Stock Section -->
+    <div class="card add-section">
+      <h3>➕ Ajouter au stock</h3>
+      <div class="form-group search-container">
+        <label>Rechercher un médicament</label>
+        <div class="input-with-icon">
+          <input type="text" [(ngModel)]="searchQuery" (input)="searchMedicines()" class="form-control" placeholder="Nom ou principe actif...">
+          <span class="icon">🔍</span>
+        </div>
+        
+        @if (searchResults().length > 0) {
+          <ul class="results-dropdown">
+            @for (m of searchResults(); track m.id) {
+              <li (click)="selectMedicine(m)">
+                <span class="m-name">{{ m.name }}</span>
+                <span class="m-principle">{{ m.activePrinciple }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+      
+      @if (selectedMedicine()) {
+        <div class="add-form-expanded animate-fade-in">
+          <div class="selected-badge">
+            SÉLECTIONNÉ : <strong>{{ selectedMedicine()?.name }}</strong>
+          </div>
+          <div class="form-row mt-1">
+            <div class="form-group">
+              <label>Quantité</label>
+              <input type="number" [(ngModel)]="newQty" class="form-control" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>Prix (FCFA)</label>
+              <input type="number" [(ngModel)]="newPrice" class="form-control" placeholder="0.00">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button (click)="addToInventory()" class="btn btn-primary">Confirmer l'ajout</button>
+            <button (click)="selectedMedicine.set(null)" class="btn btn-link">Annuler</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Right: Stats Summary (Optional feature) -->
+    <div class="card stats-card">
+      <h3>📊 Aperçu</h3>
+      <div class="stat-item">
+        <span class="label">Total Références</span>
+        <span class="value">{{ stocks().length }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="label">Ruptures de stock</span>
+        <span class="value danger">{{ lowStockCount() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Inventory Table -->
+  <div class="card inventory-card mt-2">
+    <div class="table-header">
+      <h2>Inventaire Actuel</h2>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Médicament</th>
+            <th>Prix Unitaire</th>
+            <th>Quantité en Stock</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of stocks(); track item.id) {
+            <tr>
+              <td>
+                <div class="med-info">
+                  <span class="name">{{ item.medicamentName }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="input-group">
+                  <input type="number" [(ngModel)]="item.price" class="table-input">
+                  <span class="unit">FCFA</span>
+                </div>
+              </td>
+              <td>
+                <input type="number" [(ngModel)]="item.quantity" class="table-input" [class.low]="item.quantity < 10">
+              </td>
+              <td>
+                <span class="badge" [class.badge-success]="item.quantity >= 10" [class.badge-danger]="item.quantity < 10">
+                  {{ item.quantity >= 10 ? 'En stock' : 'Stock faible' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions">
+                  <button (click)="update(item)" class="btn-icon btn-save" title="Mettre à jour">💾</button>
+                  <button (click)="delete(item.id)" class="btn-icon btn-delete" title="Supprimer">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

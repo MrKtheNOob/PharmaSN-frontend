@@ -1,0 +1,107 @@
+<div class="search-hero">
+  <div class="container">
+    <h1>Trouvez vos médicaments</h1>
+    <p>Disponibilité et prix en temps réel dans les pharmacies à proximité.</p>
+    
+    <div class="search-box-large animate-fade-in">
+      <input type="text" [(ngModel)]="query" (input)="onSearch()" placeholder="Rechercher par nom (ex: Paracétamol) ou molécule...">
+      <button (click)="onSearch()" class="btn btn-primary btn-lg">Rechercher</button>
+    </div>
+  </div>
+</div>
+
+<div class="container results-section">
+  <div class="results-header">
+    <h2>{{ query.length > 0 ? 'Résultats de recherche' : 'Médicaments disponibles' }}</h2>
+    <p class="count">{{ results().length }} pharmacies trouvées</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Consultation des stocks en direct...</p>
+    </div>
+  }
+
+  <div class="results-grid">
+    @for (item of results(); track item.id) {
+      <div class="card result-card animate-fade-in" (click)="openDetails(item)">
+        <div class="result-header">
+          <div class="med-name">{{ item.medicamentName }}</div>
+          <div class="med-price">{{ item.price }} FCFA</div>
+        </div>
+        
+        <div class="pharmacy-brief">
+          <span class="p-name">{{ item.pharmacieName }}</span>
+          <span class="p-address">📍 {{ item.pharmacieAddress }}</span>
+        </div>
+
+        <div class="stock-status" [class.low]="item.quantity < 10">
+          <span class="dot"></span> 
+          {{ item.quantity }} en stock
+        </div>
+        
+        <div class="card-footer">
+          <span class="view-details">Voir les détails →</span>
+        </div>
+      </div>
+    } @empty {
+      @if (!loading()) {
+        <div class="empty-state">
+          <p>Aucun stock trouvé pour "<strong>{{ query }}</strong>".</p>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<!-- Details Modal -->
+@if (selectedStock()) {
+  <div class="modal-overlay" (click)="closeDetails()">
+    <div class="modal-content card" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="closeDetails()">✕</button>
+      
+      <div class="modal-header">
+        <span class="category-tag">Médicament</span>
+        <h1>{{ selectedStock().medicamentName }}</h1>
+        <div class="modal-price">{{ selectedStock().price }} FCFA</div>
+      </div>
+
+      <div class="modal-grid">
+        <div class="detail-section">
+          <h3>🏢 Informations Pharmacie</h3>
+          <div class="info-item">
+            <span class="label">Nom</span>
+            <span class="value">{{ selectedStock().pharmacieName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Adresse</span>
+            <span class="value">{{ selectedStock().pharmacieAddress }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Téléphone</span>
+            <span class="valueHighlight">{{ selectedStock().pharmaciePhoneNumber }}</span>
+          </div>
+          
+          <a [href]="'https://www.google.com/maps/search/?api=1&query=' + selectedStock().pharmacieAddress" 
+             target="_blank" class="btn btn-secondary mt-1">
+            🗺️ Voir sur Google Maps
+          </a>
+        </div>
+
+        <div class="detail-section">
+          <h3>📦 État du Stock</h3>
+          <div class="stock-badge-large" [class.low]="selectedStock().quantity < 10">
+            <div class="qty">{{ selectedStock().quantity }}</div>
+            <div class="unit">Unités disponibles</div>
+          </div>
+          <p class="update-note">Mis à jour en temps réel par le pharmacien.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="closeDetails()">Fermer</button>
+      </div>
+    </div>
+  </div>
+}

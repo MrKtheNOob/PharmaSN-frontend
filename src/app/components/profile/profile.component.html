@@ -1,0 +1,38 @@
+<div class="container profile-page">
+  <div class="card profile-card">
+    <div class="profile-header">
+      <h2>Mon Officine</h2>
+      <p>Mettez à jour les informations de votre pharmacie pour le public.</p>
+    </div>
+
+    @if (pharmacy()) {
+      <form (submit)="onUpdate()">
+        <div class="form-group">
+          <label>Nom de la Pharmacie</label>
+          <input type="text" [(ngModel)]="pharmacy().name" name="name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Adresse Complète</label>
+          <input type="text" [(ngModel)]="pharmacy().address" name="address" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Numéro de Téléphone</label>
+          <input type="text" [(ngModel)]="pharmacy().phoneNumber" name="phone" class="form-control" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        </div>
+
+        @if (success()) {
+          <div class="alert success-alert animate-fade-in">Profil mis à jour avec succès !</div>
+        }
+        @if (error()) {
+          <div class="alert error-alert animate-fade-in">{{ error() }}</div>
+        }
+      </form>
+    }
+  </div>
+</div>
