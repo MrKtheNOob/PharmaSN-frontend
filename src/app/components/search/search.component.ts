@@ -38,8 +38,8 @@ export class SearchComponent implements OnInit {
       this.loadTrending();
       return;
     }
-    if (this.query.length < 2) return;
-    
+
+
     this.loading.set(true);
     this.http.get<any[]>(`http://localhost:8080/api/stocks/search?name=${this.query}`).subscribe({
       next: (res) => {

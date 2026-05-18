@@ -1,11 +1,11 @@
 <header class="app-header">
   <div class="nav-container">
     <div class="brand" routerLink="/search">
-      <span class="logo">💊</span> PharmaFinder
+      <span class="logo">💊</span> PharmaSN
     </div>
     <nav class="nav-links">
       <a routerLink="/search" routerLinkActive="active">Recherche</a>
-      
+
       @if (!authService.isAuthenticated()) {
         <a routerLink="/login" routerLinkActive="active" class="btn-login">Connexion</a>
         <a routerLink="/register" class="btn-register">S'inscrire</a>
